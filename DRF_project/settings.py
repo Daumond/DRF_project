@@ -35,7 +35,14 @@ INSTALLED_APPS = [
 
     'rest_framework',
     'django_filters',
+    "rest_framework_simplejwt",
 ]
+
+REST_FRAMEWORK = {
+    'DEFAULT_FILTER_BACKENDS': ('django_filters.rest_framework.DjangoFilterBackend',),
+    'DEFAULT_AUTHENTICATION_CLASSES': ['rest_framework_simplejwt.authentication.JWTAuthentication'],
+    'DEFAULT_PERMISSION_CLASSES': ['rest_framework.permissions.IsAuthenticated']
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -122,3 +129,6 @@ MEDIA_ROOT = os.path.join(BASE_DIR / 'media')
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = 'user.User'
+
+LOGIN_REDIRECT_URL = "/"  # редирект для автоаризации
+LOGOUT_REDIRECT_URL = "/"  # редирект для выхода из автоаризации
