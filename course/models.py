@@ -1,11 +1,14 @@
 from django.db import models
 from django.conf import settings
 
+from user.models import User
+
 
 NULLABLE = {"null": True, "blank": True}
 
 class Course(models.Model):
     name = models.CharField(max_length=150, verbose_name="Название")
+    price_course = models.FloatField(verbose_name='Цена', **NULLABLE)
     preview = models.ImageField(upload_to="courses/previews/", verbose_name="Превью")
     description = models.TextField(verbose_name="Описание")
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, verbose_name="Владелец", **NULLABLE)
@@ -39,3 +42,19 @@ class Lesson(models.Model):
         db_table = "lessons"
         verbose_name = 'Урок'
         verbose_name_plural = 'Уроки'
+
+
+class Subscribe(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Пользователь подписки', **NULLABLE)
+    course = models.ForeignKey(Course, on_delete=models.CASCADE, verbose_name='Курс подписки', **NULLABLE)
+
+    is_active = models.BooleanField(default=True, verbose_name='Актуальность')
+    public_date = models.DateField(auto_now=True, verbose_name='Дата подписки', **NULLABLE)
+
+    def __str__(self):
+        return f'{self.user} - {self.course}'
+
+    class Meta:
+        verbose_name = 'подписка'
+        verbose_name_plural = 'подписки'
+        ordering = ['public_date', 'course', 'user', ]

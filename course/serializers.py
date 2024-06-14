@@ -1,7 +1,14 @@
 from rest_framework import serializers
 from rest_framework.fields import SerializerMethodField
 
-from course.models import Course, Lesson
+from course.models import Course, Lesson, Subscribe
+from course.validators import ValidatedUrl
+
+
+class SubscribeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Subscribe
+        fields = ['is_active', 'user']
 
 
 class LessonSerializer(serializers.ModelSerializer):
