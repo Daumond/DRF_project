@@ -1,3 +1,4 @@
+from django.core.exceptions import PermissionDenied
 from rest_framework import generics, viewsets
 from rest_framework.exceptions import ValidationError
 from rest_framework.generics import get_object_or_404
@@ -35,6 +36,14 @@ class CourseViewSet(viewsets.ModelViewSet):
 
         return [permission() for permission in permission_classes]
 
+    def get_queryset(self):
+        if not self.request.user.is_staff:
+            return Course.objects.filter(owner=self.request.user)
+        elif self.request.user.is_staff:
+            return Course.objects.all()
+        else:
+            raise PermissionDenied
+
 
 class LessonListCreateAPIView(generics.ListCreateAPIView):
     serializer_class = LessonSerializer
@@ -52,17 +61,41 @@ class LessonListAPIView(generics.ListAPIView):
     permission_classes = [IsOwnerOrModerator]
     pagination_class = LessonPagination
 
+    def get_queryset(self):
+        if not self.request.user.is_staff:
+            return Lesson.objects.filter(owner=self.request.user)
+        elif self.request.user.is_staff:
+            return Lesson.objects.all()
+        else:
+            raise PermissionDenied
+
 
 class LessonRetrieveAPIView(generics.RetrieveAPIView):
     serializer_class = LessonSerializer
     permission_classes = [IsOwnerOrModerator]
     pagination_class = LessonPagination
 
+    def get_queryset(self):
+        if not self.request.user.is_staff:
+            return Lesson.objects.filter(owner=self.request.user)
+        elif self.request.user.is_staff:
+            return Lesson.objects.all()
+        else:
+            raise PermissionDenied
+
 
 class LessonUpdateAPIView(generics.UpdateAPIView):
     serializer_class = LessonSerializer
     permission_classes = [IsOwnerOrModerator]
     pagination_class = LessonPagination
+
+    def get_queryset(self):
+        if not self.request.user.is_staff:
+            return Lesson.objects.filter(owner=self.request.user)
+        elif self.request.user.is_staff:
+            return Lesson.objects.all()
+        else:
+            raise PermissionDenied
 
 
 class LessonDestroyAPIView(generics.DestroyAPIView):
