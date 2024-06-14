@@ -8,6 +8,7 @@ NULLABLE = {"null": True, "blank": True}
 
 class Course(models.Model):
     name = models.CharField(max_length=150, verbose_name="Название")
+    price_course = models.FloatField(verbose_name='Цена', **NULLABLE)
     preview = models.ImageField(upload_to="courses/previews/", verbose_name="Превью")
     description = models.TextField(verbose_name="Описание")
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, verbose_name="Владелец", **NULLABLE)

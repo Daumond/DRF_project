@@ -33,9 +33,10 @@ INSTALLED_APPS = [
     "course.apps.CourseConfig",
     "user.apps.UserConfig",
 
-    'rest_framework',
-    'django_filters',
+    "rest_framework",
+    "django_filters",
     "rest_framework_simplejwt",
+    "drf_yasg",
 ]
 
 REST_FRAMEWORK = {
@@ -132,3 +133,18 @@ AUTH_USER_MODEL = 'user.User'
 
 LOGIN_REDIRECT_URL = "/"  # редирект для автоаризации
 LOGOUT_REDIRECT_URL = "/"  # редирект для выхода из автоаризации
+
+STRIPE_API_KEY = os.getenv('STRIPE_API_KEY')
+
+SWAGGER_SETTINGS = {
+   'SECURITY_DEFINITIONS': {
+      'Basic': {
+            'type': 'basic'
+      },
+      'Bearer': {
+            'type': 'apiKey',
+            'name': 'Authorization',
+            'in': 'header'
+      }
+   }
+}

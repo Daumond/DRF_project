@@ -1,6 +1,7 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
+NULLABLE = {'null': True, 'blank': True}
 
 class User(AbstractUser):
     email = models.EmailField(unique=True, verbose_name="Почта")
@@ -39,6 +40,8 @@ class Payment(models.Model):
         verbose_name='Пользователь'
     )
     date = models.DateField(auto_now_add=True, verbose_name='Дата оплаты')
+    pay_url = models.CharField(max_length=400, verbose_name='Ссылка на оплату', **NULLABLE)
+    session = models.CharField(max_length=400, verbose_name='Сессия для оплаты в Stripe', **NULLABLE)
     course = models.ForeignKey(
         "course.Course",
         on_delete=models.CASCADE,
