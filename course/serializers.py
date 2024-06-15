@@ -13,13 +13,15 @@ class SubscribeSerializer(serializers.ModelSerializer):
 
 class LessonSerializer(serializers.ModelSerializer):
     class Meta:
+        validators = [ValidatedUrl(field='url'), ValidatedUrl(field='description')]
         model = Lesson
         fields = "__all__"
 
 
 class CourseSerializer(serializers.ModelSerializer):
-    lessons = SerializerMethodField()
-    count_lessons = SerializerMethodField()
+    lessons = SerializerMethodField(read_only=True)
+    count_lessons = SerializerMethodField(read_only=True)
+    subscribe = SubscribeSerializer(read_only=True, source='subscribe_set', many=True)
 
     class Meta:
         model = Course
@@ -39,3 +41,7 @@ class CourseSerializer(serializers.ModelSerializer):
     @staticmethod
     def get_lessons(course):
         return [lesson.__str__() for lesson in Lesson.objects.filter(course=course)]
+
+    def get_subscribe(self, obj):
+        return obj.subscribe_set.filter(user=self.request.user, course=obj).is_active
+
