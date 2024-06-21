@@ -12,6 +12,8 @@ class Course(models.Model):
     preview = models.ImageField(upload_to="courses/previews/", verbose_name="Превью")
     description = models.TextField(verbose_name="Описание")
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, verbose_name="Владелец", **NULLABLE)
+    public_date = models.DateField(auto_created=True, verbose_name='Дата публикации', **NULLABLE)
+    update_date = models.DateTimeField(auto_now=True, verbose_name='Дата обновления', **NULLABLE)
 
     def __str__(self):
         return f"{self.name}"
@@ -47,7 +49,6 @@ class Lesson(models.Model):
 class Subscribe(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Пользователь подписки', **NULLABLE)
     course = models.ForeignKey(Course, on_delete=models.CASCADE, verbose_name='Курс подписки', **NULLABLE)
-
     is_active = models.BooleanField(default=True, verbose_name='Актуальность')
     public_date = models.DateField(auto_now=True, verbose_name='Дата подписки', **NULLABLE)
 
