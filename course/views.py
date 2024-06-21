@@ -9,6 +9,7 @@ from rest_framework.permissions import AllowAny
 from course.models import Course, Lesson, Subscribe
 from course.serializers import CourseSerializer, LessonSerializer, SubscribeSerializer
 from course.paginators import LessonPagination
+from course.services import subscriptions_mailing
 from user.permissions import IsNotModerator, IsOwnerOrModerator, IsOwner
 
 
@@ -44,6 +45,10 @@ class CourseViewSet(viewsets.ModelViewSet):
         else:
             raise PermissionDenied
 
+    def perform_update(self, serializer):
+        course_id = serializer.save(owner=self.request.user).id
+        subscriptions_mailing.delay(course_id=course_id)
+
 
 class LessonListCreateAPIView(generics.ListCreateAPIView):
     serializer_class = LessonSerializer
@@ -54,6 +59,9 @@ class LessonListCreateAPIView(generics.ListCreateAPIView):
         new_lesson = serializer.save()
         new_lesson.owner = self.request.user
         new_lesson.save()
+        course_id = new_lesson.course.id
+        lesson_id = new_lesson.id
+        subscriptions_mailing.delay(course_id=course_id, lesson_id=lesson_id)
 
 
 class LessonListAPIView(generics.ListAPIView):
@@ -96,6 +104,12 @@ class LessonUpdateAPIView(generics.UpdateAPIView):
             return Lesson.objects.all()
         else:
             raise PermissionDenied
+
+    def perform_update(self, serializer):
+        course_id = serializer.save().course.id
+        lesson_id = serializer.save().id
+        subscriptions_mailing.delay(course_id=course_id, lesson_id=lesson_id)
+
 
 
 class LessonDestroyAPIView(generics.DestroyAPIView):
